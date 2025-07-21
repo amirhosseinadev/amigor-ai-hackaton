@@ -45,9 +45,17 @@ export const initialOdds: Odd[] = [
         market_trend: "A large volume of bets have come in on Real Madrid in the last 24 hours."
     },
     historicalComparisonChartData: [
-        { match: "2022 Final", teamA: 1, teamB: 0, similar: true },
-        { match: "2018 Final", teamA: 3, teamB: 1, similar: false },
-        { match: "2009 Group", teamA: 0, teamB: 4, similar: false }
+        { matchDate: "May 2022", teamA: 1, teamB: 0 },
+        { matchDate: "May 2018", teamA: 3, teamB: 1 },
+        { matchDate: "Feb 2009", teamA: 0, teamB: 4 },
+        { matchDate: "Mar 2009", teamA: 1, teamB: 0 },
+        { matchDate: "Nov 2014", teamA: 1, teamB: 0 },
+    ],
+    playerStatusData: [
+        { player: "Mohamed Salah", country: "Liverpool", position: "FW", status: "Ankle sprain; game-time decision", matches: 38, role: "Star striker, top scorer", availability: "Doubtful" },
+        { player: "Virgil van Dijk", country: "Liverpool", position: "CB", status: "Fit to play", matches: 35, role: "Defensive core, Captain", availability: "Yes" },
+        { player: "Karim Benzema", country: "Real Madrid", position: "CF", status: "Fully fit", matches: 40, role: "Playmaker, clinical finisher", availability: "Yes" },
+        { player: "Luka Modrić", country: "Real Madrid", position: "Midfielder", status: "Knee recovery; easing back in", matches: 32, role: "Engine room, goal threat", availability: "Likely sub" },
     ],
     changesSinceLastMatch: "Real Madrid has integrated two new midfielders, while Liverpool has a new defensive coach."
   },
@@ -65,10 +73,11 @@ export const initialOdds: Odd[] = [
         team_news: "Reports suggest internal conflict within the Celtics' coaching staff."
     },
     historicalComparisonChartData: [
-        { match: "Game 6", teamA: 101, teamB: 112, similar: true },
-        { match: "Game 5", teamA: 108, teamB: 99, similar: true },
-        { match: "Last Season", teamA: 95, teamB: 120, similar: false }
+        { matchDate: "Game 6", teamA: 101, teamB: 112 },
+        { matchDate: "Game 5", teamA: 108, teamB: 99 },
+        { matchDate: "Last Season", teamA: 95, teamB: 120 }
     ],
+    playerStatusData: [],
     changesSinceLastMatch: "Lakers' key player has recovered from a minor injury that kept him out of their last regular season matchup."
   },
   {
@@ -85,9 +94,10 @@ export const initialOdds: Odd[] = [
         weather: "Forecast predicts high humidity and potential for rain delays, which historically favors Alcaraz's endurance."
     },
     historicalComparisonChartData: [
-        { match: "French Open", teamA: 2, teamB: 3, similar: false },
-        { match: "ATP Finals", teamA: 3, teamB: 1, similar: true }
+        { matchDate: "French Open", teamA: 2, teamB: 3 },
+        { matchDate: "ATP Finals", teamA: 3, teamB: 1 }
     ],
+    playerStatusData: [],
     changesSinceLastMatch: "Alcaraz has shown significant improvement in his grass court game this season."
   },
   {
@@ -103,10 +113,11 @@ export const initialOdds: Odd[] = [
     historicalOdds: "Man City has not lost a home game against Arsenal in 5 years.",
     marketInfluenceDetails: {},
     historicalComparisonChartData: [
-        { match: "FA Cup", teamA: 1, teamB: 2, similar: false },
-        { match: "Last Season (H)", teamA: 4, teamB: 1, similar: true },
-        { match: "Last Season (A)", teamA: 3, teamB: 1, similar: false }
+        { matchDate: "FA Cup", teamA: 1, teamB: 2 },
+        { matchDate: "Last Season (H)", teamA: 4, teamB: 1 },
+        { matchDate: "Last Season (A)", teamA: 3, teamB: 1 }
     ],
+    playerStatusData: [],
     changesSinceLastMatch: "Arsenal has signed a world-class defender, strengthening their back line."
   },
 ];

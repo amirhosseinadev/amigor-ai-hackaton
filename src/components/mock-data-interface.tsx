@@ -37,8 +37,6 @@ type MockDataInterfaceProps = {
   onAddOdd: (newOdd: Odd) => void;
 };
 
-const marketInfluenceIds = Object.keys(allMarketInfluences) as [string, ...string[]];
-
 const formSchema = z.object({
   event: z.string().min(3, "Event name is too short"),
   sport: z.enum(availableSports),
@@ -50,6 +48,7 @@ const formSchema = z.object({
   marketInfluences: z.array(z.string()).optional(),
   marketInfluenceDetails: z.string().optional(),
   historicalComparisonChartData: z.string().optional(),
+  playerStatusData: z.string().optional(),
   changesSinceLastMatch: z.string().optional(),
 });
 
@@ -68,7 +67,8 @@ export function MockDataInterface({ onAddOdd }: MockDataInterfaceProps) {
       teamBOdds: 1.0,
       marketInfluences: [],
       marketInfluenceDetails: '{"injury": "Star player is out with a knee injury."}',
-      historicalComparisonChartData: '[{"match":"Last Season","teamA":2,"teamB":1,"similar":true},{"match":"Two Seasons Ago","teamA":2,"teamB":2,"similar":false}]',
+      historicalComparisonChartData: '[{"matchDate":"May 2022","teamA":1,"teamB":0},{"matchDate":"May 2018","teamA":3,"teamB":1}]',
+      playerStatusData: '[{"player":"John Doe","country":"Team A","position":"FWD","status":"Fit","matches":10,"role":"Striker","availability":"Yes"}]',
       changesSinceLastMatch: "Team A has a new coach and a stronger defense.",
     },
   });
@@ -78,7 +78,8 @@ export function MockDataInterface({ onAddOdd }: MockDataInterfaceProps) {
         .map(id => allMarketInfluences[id])
         .filter(Boolean);
 
-    let influenceDetails;
+    let influenceDetails, chartData, playerStatusData;
+    
     try {
         influenceDetails = values.marketInfluenceDetails ? JSON.parse(values.marketInfluenceDetails) : {};
     } catch (e) {
@@ -86,7 +87,6 @@ export function MockDataInterface({ onAddOdd }: MockDataInterfaceProps) {
         influenceDetails = {};
     }
 
-    let chartData;
     try {
         chartData = values.historicalComparisonChartData ? JSON.parse(values.historicalComparisonChartData) : [];
     } catch (e) {
@@ -94,12 +94,21 @@ export function MockDataInterface({ onAddOdd }: MockDataInterfaceProps) {
         chartData = [];
     }
 
+    try {
+        playerStatusData = values.playerStatusData ? JSON.parse(values.playerStatusData) : [];
+    } catch (e) {
+        console.error("Invalid JSON for player status data");
+        playerStatusData = [];
+    }
+
+
     const newOdd: Odd = {
       ...values,
       id: new Date().toISOString(),
       marketInfluences: selectedInfluences,
       marketInfluenceDetails: influenceDetails,
       historicalComparisonChartData: chartData,
+      playerStatusData: playerStatusData,
       changesSinceLastMatch: values.changesSinceLastMatch || "",
       historicalOdds: "No historical data available for mock events.",
     };
@@ -283,7 +292,21 @@ export function MockDataInterface({ onAddOdd }: MockDataInterfaceProps) {
                     <FormItem>
                       <FormLabel>Historical Chart Data (JSON)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder='e.g., [{"match":"Last Season","teamA":2,"teamB":1,"similar":true}]' {...field} />
+                        <Textarea placeholder='e.g., [{"matchDate":"May 2022","teamA":2,"teamB":1}]' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="playerStatusData"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Player Status Data (JSON)</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder='e.g., [{"player":"John Doe","country":"Team A",...}]' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
