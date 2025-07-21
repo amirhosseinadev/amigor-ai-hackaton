@@ -26,10 +26,11 @@ type OddsTableProps = {
   odds: Odd[];
   onPredictClick: (odd: Odd) => void;
   onRowClick: (odd: Odd) => void;
+  onOddSelect: (oddValue: number) => void;
   selectedOddId?: string;
 };
 
-export function OddsTable({ odds, onPredictClick, onRowClick, selectedOddId }: OddsTableProps) {
+export function OddsTable({ odds, onPredictClick, onRowClick, onOddSelect, selectedOddId }: OddsTableProps) {
   const [highlightedCells, setHighlightedCells] = React.useState<Set<string>>(
     new Set()
   );
@@ -57,6 +58,11 @@ export function OddsTable({ odds, onPredictClick, onRowClick, selectedOddId }: O
 
     prevOddsRef.current = odds;
   }, [odds]);
+  
+  const handleOddClick = (e: React.MouseEvent, oddValue: number) => {
+    e.stopPropagation();
+    onOddSelect(oddValue);
+  };
 
   return (
     <Card className="shadow-lg">
@@ -96,6 +102,7 @@ export function OddsTable({ odds, onPredictClick, onRowClick, selectedOddId }: O
                       </div>
                     </TableCell>
                     <TableCell
+                      onClick={(e) => handleOddClick(e, odd.teamAOdds)}
                       className={cn("text-center font-mono text-lg", {
                         "animate-highlight": highlightedCells.has(
                           `${odd.id}-teamA`
@@ -106,6 +113,7 @@ export function OddsTable({ odds, onPredictClick, onRowClick, selectedOddId }: O
                       {odd.teamAOdds.toFixed(2)}
                     </TableCell>
                     <TableCell
+                      onClick={(e) => handleOddClick(e, odd.teamBOdds)}
                       className={cn("text-center font-mono text-lg", {
                         "animate-highlight": highlightedCells.has(
                           `${odd.id}-teamB`
@@ -117,6 +125,7 @@ export function OddsTable({ odds, onPredictClick, onRowClick, selectedOddId }: O
                     </TableCell>
                     {odds.some((o) => o.drawOdds) && (
                       <TableCell
+                        onClick={(e) => odd.drawOdds && handleOddClick(e, odd.drawOdds)}
                         className={cn("text-center font-mono text-lg", {
                           "animate-highlight": highlightedCells.has(
                             `${odd.id}-draw`

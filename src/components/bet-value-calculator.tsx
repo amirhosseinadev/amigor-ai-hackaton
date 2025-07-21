@@ -43,7 +43,11 @@ type CalculationResult = {
     suggestedAction: string;
 };
 
-export function BetValueCalculator() {
+type BetValueCalculatorProps = {
+    initialValues?: Partial<FormValues>;
+}
+
+export function BetValueCalculator({ initialValues }: BetValueCalculatorProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [result, setResult] = React.useState<CalculationResult | null>(null);
   const { toast } = useToast();
@@ -51,11 +55,11 @@ export function BetValueCalculator() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      sport: "",
+      sport: initialValues?.sport || "",
       betType: "",
-      odds: 1.5,
+      odds: initialValues?.odds || 1.5,
       stake: 10,
-      marketInfluences: "No significant news, standard market conditions.",
+      marketInfluences: initialValues?.marketInfluences || "No significant news, standard market conditions.",
     },
   });
 
@@ -95,6 +99,7 @@ export function BetValueCalculator() {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
