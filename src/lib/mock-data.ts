@@ -1,5 +1,5 @@
 import { Flame, CloudRain, Activity, TrendingUp } from "lucide-react";
-import type { Odd, MarketInfluence } from "./types";
+import type { Odd, MarketInfluence, Bet } from "./types";
 
 export const allMarketInfluences: Record<string, MarketInfluence> = {
   team_news: {
@@ -122,5 +122,16 @@ export const initialOdds: Odd[] = [
   },
 ];
 
-export const availableSports: Odd['sport'][] = ["Soccer", "Basketball", "Tennis"];
-export const availableBetTypes = ["Moneyline", "Spread", "Over/Under"];
+export const userBetHistory: Bet[] = [
+    { id: "hist1", sport: "Soccer", event: "Premier League", betType: "Moneyline", betOn: "Man City", stake: 20, odds: 1.5, outcome: "win", date: "2023-10-01" },
+    { id: "hist2", sport: "Soccer", event: "La Liga", betType: "Moneyline", betOn: "Real Madrid", stake: 10, odds: 2.1, outcome: "win", date: "2023-10-02" },
+    { id: "hist3", sport: "Basketball", event: "NBA", betType: "Over/Under", betOn: "Over 210.5", stake: 15, odds: 1.9, outcome: "loss", date: "2023-10-03" },
+    { id: "hist4", sport: "Soccer", event: "Serie A", betType: "Draw", betOn: "Draw", stake: 5, odds: 3.5, outcome: "loss", date: "2023-10-04" },
+    { id: "hist5", sport: "Soccer", event: "Champions League", betType: "Moneyline", betOn: "Liverpool", stake: 25, odds: 2.8, outcome: "loss", date: "2023-10-05", marketCondition: "Rainy" },
+    { id: "hist6", sport: "Soccer", event: "FA Cup", betType: "Moneyline", betOn: "Man City", stake: 10, odds: 1.3, outcome: "win", date: "2023-11-01" },
+    { id: "hist7", sport: "Tennis", event: "US Open", betType: "Moneyline", betOn: "N. Djokovic", stake: 50, odds: 1.2, outcome: "win", date: "2023-11-05" },
+    { id: "hist8", sport: "Soccer", event: "Friendly", betType: "Moneyline", betOn: "Liverpool", stake: 10, odds: 2.2, outcome: "win", date: "2023-11-10", marketCondition: "Rainy" },
+]
+
+export const availableSports: readonly ["Soccer", "Basketball", "Tennis"] = ["Soccer", "Basketball", "Tennis"];
+export const availableBetTypes: readonly ["Moneyline", "Spread", "Over/Under", "Draw"] = ["Moneyline", "Spread", "Over/Under", "Draw"];

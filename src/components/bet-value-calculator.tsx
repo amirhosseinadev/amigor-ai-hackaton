@@ -34,6 +34,7 @@ const formSchema = z.object({
   odds: z.coerce.number().min(1, "Odds must be at least 1"),
   stake: z.coerce.number().positive("Stake must be a positive number"),
   marketInfluences: z.string().min(1, "Market influences are required"),
+  userHistoryAnalysis: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -60,13 +61,18 @@ export function BetValueCalculator({ initialValues }: BetValueCalculatorProps) {
       odds: initialValues?.odds || 1.5,
       stake: 10,
       marketInfluences: initialValues?.marketInfluences || "No significant news, standard market conditions.",
+      userHistoryAnalysis: initialValues?.userHistoryAnalysis || "No historical data available.",
     },
   });
 
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     setResult(null);
-    const response = await calculateBetValue(values);
+    const response = await calculateBetValue({
+        ...values,
+        userHistoryAnalysis: values.userHistoryAnalysis || "No historical data available."
+    });
+
     if ("error" in response) {
       toast({
         variant: "destructive",
@@ -78,6 +84,10 @@ export function BetValueCalculator({ initialValues }: BetValueCalculatorProps) {
     }
     setIsLoading(false);
   };
+  
+  React.useEffect(() => {
+    // Hidden field, no need to show in UI
+  }, [form.watch('userHistoryAnalysis')]);
 
   return (
     <Card className="shadow-lg">

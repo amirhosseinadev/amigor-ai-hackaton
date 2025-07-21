@@ -17,6 +17,7 @@ const CalculateBetValueInputSchema = z.object({
   odds: z.number().describe('The current odds for the bet.'),
   stake: z.number().describe('The amount of money being wagered.'),
   marketInfluences: z.string().describe('Any market influences affecting the odds (e.g., injury, weather).'),
+  userHistoryAnalysis: z.string().describe('An AI-generated analysis of the user\'s historical betting patterns and performance related to this type of bet.')
 });
 export type CalculateBetValueInput = z.infer<typeof CalculateBetValueInputSchema>;
 
@@ -37,6 +38,8 @@ const prompt = ai.definePrompt({
   output: {schema: CalculateBetValueOutputSchema},
   prompt: `You are an AI assistant that calculates the potential value of sports bets.
 
+  Incorporate the user's past performance from their betting history analysis into your calculation. If they have a strong history with this type of bet, the value might be higher. If they have a poor history, the value might be lower and the risk higher.
+
   Consider the following information:
 
   Sport: {{{sport}}}
@@ -44,8 +47,9 @@ const prompt = ai.definePrompt({
   Odds: {{{odds}}}
   Stake: {{{stake}}}
   Market Influences: {{{marketInfluences}}}
+  User's Historical Bet Analysis: {{{userHistoryAnalysis}}}
 
-  Calculate the bet value, assess the risk, and suggest an action based on the information provided.
+  Calculate the bet value, assess the risk, and suggest an action based on all the information provided.
   Return the bet value as a number, the risk assessment as a string, and the suggested action as a string.
 `,
 });

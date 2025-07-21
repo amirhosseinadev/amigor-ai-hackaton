@@ -10,6 +10,12 @@ import {
   type PredictOddsChangesInput,
   type PredictOddsChangesOutput,
 } from "@/ai/flows/predict-odds-changes";
+import {
+  analyzeBetHistory as analyzeBetHistoryFlow,
+  type AnalyzeBetHistoryInput,
+  type AnalyzeBetHistoryOutput,
+} from "@/ai/flows/analyze-bet-history";
+
 
 export async function calculateBetValue(
   input: CalculateBetValueInput
@@ -32,5 +38,17 @@ export async function predictOddsChanges(
   } catch (e) {
     console.error(e);
     return { error: "Failed to predict odds changes. Please try again." };
+  }
+}
+
+export async function analyzeBetHistory(
+  input: AnalyzeBetHistoryInput
+): Promise<AnalyzeBetHistoryOutput | { error: string }> {
+  try {
+    const result = await analyzeBetHistoryFlow(input);
+    return result;
+  } catch (e) {
+    console.error(e);
+    return { error: "Failed to analyze bet history. Please try again." };
   }
 }

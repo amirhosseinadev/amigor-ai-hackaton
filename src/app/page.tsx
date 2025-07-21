@@ -5,44 +5,75 @@ import { OddsTable } from "@/components/odds-table";
 import { BetValueCalculator } from "@/components/bet-value-calculator";
 import { Header } from "@/components/layout/header";
 import { MockDataInterface } from "@/components/mock-data-interface";
-import type { Odd } from "@/lib/types";
-import { initialOdds } from "@/lib/mock-data";
+import type { Odd, Bet } from "@/lib/types";
+import { initialOdds, userBetHistory as mockBetHistory } from "@/lib/mock-data";
 import { PredictionAlertModal } from "@/components/prediction-alert-modal";
 import { DetailedStatistics } from "@/components/detailed-statistics";
+import { HistoricalInsights } from "@/components/historical-insights";
+import type { AnalyzeBetHistoryOutput } from "@/ai/flows/analyze-bet-history";
+import { analyzeBetHistory } from "./actions";
 
 export default function Home() {
   const [odds, setOdds] = React.useState<Odd[]>(initialOdds);
+  const [userBetHistory, setUserBetHistory] = React.useState<Bet[]>(mockBetHistory);
   const [selectedOddForPrediction, setSelectedOddForPrediction] = React.useState<Odd | null>(null);
   const [selectedOddForStatistics, setSelectedOddForStatistics] = React.useState<Odd | null>(null);
+  const [historicalAnalysis, setHistoricalAnalysis] = React.useState<AnalyzeBetHistoryOutput | null>(null);
+  const [isAnalysisLoading, setIsAnalysisLoading] = React.useState(false);
+  
   const [calculatorValues, setCalculatorValues] = React.useState<{
     sport: string;
     marketInfluences: string;
     odds?: number;
     key: number;
+    userHistoryAnalysis?: string;
   }>({
     sport: "",
     marketInfluences: "",
     key: 0,
+    userHistoryAnalysis: ""
   });
 
 
   React.useEffect(() => {
     if (odds.length > 0 && !selectedOddForStatistics) {
       const firstOdd = odds[0];
-      setSelectedOddForStatistics(firstOdd);
-      setCalculatorValues({
-        sport: firstOdd.sport,
-        marketInfluences: firstOdd.marketInfluences.map((mi) => mi.name).join(", ") || "None",
-        odds: firstOdd.teamAOdds,
-        key: Math.random(),
-      });
+      handleSelectOddForStatistics(firstOdd);
     }
-  }, [odds, selectedOddForStatistics]);
-
+  }, []);
 
   const handleAddOdd = (newOdd: Odd) => {
     setOdds((prevOdds) => [...prevOdds, newOdd]);
   };
+  
+  const handleAddBet = (newBet: Bet) => {
+    setUserBetHistory((prevHistory) => [...prevHistory, newBet]);
+    if (selectedOddForStatistics) {
+      // Re-run analysis if the new bet might be relevant
+      runAnalysis(selectedOddForStatistics);
+    }
+  }
+
+  const runAnalysis = async (odd: Odd) => {
+    setIsAnalysisLoading(true);
+    const analysisInput = {
+      betHistory: userBetHistory,
+      currentBetContext: {
+        sport: odd.sport,
+        teamA: odd.teamA,
+        teamB: odd.teamB,
+        marketInfluences: odd.marketInfluences.map(mi => mi.name).join(', ')
+      }
+    };
+    const result = await analyzeBetHistory(analysisInput);
+    if ("error" in result) {
+      console.error(result.error);
+      setHistoricalAnalysis(null);
+    } else {
+      setHistoricalAnalysis(result);
+    }
+    setIsAnalysisLoading(false);
+  }
 
   const handleOpenPredictionModal = (odd: Odd) => {
     setSelectedOddForPrediction(odd);
@@ -54,6 +85,7 @@ export default function Home() {
 
   const handleSelectOddForStatistics = (odd: Odd) => {
     setSelectedOddForStatistics(odd);
+    runAnalysis(odd);
      setCalculatorValues(prev => ({
       ...prev,
       sport: odd.sport,
@@ -61,6 +93,16 @@ export default function Home() {
       key: Math.random() // Force re-render of calculator
     }));
   };
+  
+  React.useEffect(() => {
+    if (historicalAnalysis) {
+        setCalculatorValues(prev => ({
+            ...prev,
+            userHistoryAnalysis: historicalAnalysis.overallSummary,
+            key: Math.random()
+        }));
+    }
+  }, [historicalAnalysis]);
 
   const handleOddSelectForCalculator = (oddValue: number) => {
     setCalculatorValues(prev => ({
@@ -85,17 +127,19 @@ export default function Home() {
               selectedOddId={selectedOddForStatistics?.id}
             />
             {selectedOddForStatistics && <DetailedStatistics odd={selectedOddForStatistics} />}
-            <MockDataInterface onAddOdd={handleAddOdd} />
+            <MockDataInterface onAddOdd={handleAddOdd} onAddBet={handleAddBet} />
           </div>
-          <aside className="lg:col-span-1 lg:sticky top-8">
+          <aside className="lg:col-span-1 lg:sticky top-8 flex flex-col gap-8">
             <BetValueCalculator
                 key={calculatorValues.key}
                 initialValues={{
                     sport: calculatorValues.sport,
                     marketInfluences: calculatorValues.marketInfluences,
-                    odds: calculatorValues.odds
+                    odds: calculatorValues.odds,
+                    userHistoryAnalysis: calculatorValues.userHistoryAnalysis
                 }}
             />
+            <HistoricalInsights analysis={historicalAnalysis} isLoading={isAnalysisLoading} />
           </aside>
         </div>
       </main>

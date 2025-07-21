@@ -10,6 +10,7 @@ export type MarketInfluence = {
 };
 
 export type Sport = "Soccer" | "Basketball" | "Tennis";
+export type BetType = "Moneyline" | "Spread" | "Over/Under" | "Draw";
 
 export type HistoricalComparisonDataPoint = {
     matchDate: string;
@@ -44,4 +45,17 @@ export type Odd = {
   historicalComparisonChartData: HistoricalComparisonDataPoint[];
   changesSinceLastMatch: string;
   playerStatusData: PlayerStatus[];
+};
+
+export type Bet = {
+  id: string;
+  sport: Sport;
+  event: string;
+  betType: BetType;
+  betOn: string;
+  stake: number;
+  odds: number;
+  outcome: "win" | "loss";
+  date: string;
+  marketCondition?: string;
 };
