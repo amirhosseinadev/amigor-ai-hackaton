@@ -19,6 +19,7 @@ export default function Home() {
   const [selectedOddForStatistics, setSelectedOddForStatistics] = React.useState<Odd | null>(null);
   const [historicalAnalysis, setHistoricalAnalysis] = React.useState<AnalyzeBetHistoryOutput | null>(null);
   const [isAnalysisLoading, setIsAnalysisLoading] = React.useState(false);
+  const [analysisCache, setAnalysisCache] = React.useState<Record<string, AnalyzeBetHistoryOutput>>({});
   
   const [calculatorValues, setCalculatorValues] = React.useState<{
     sport: string;
@@ -48,13 +49,20 @@ export default function Home() {
   
   const handleAddBet = (newBet: Bet) => {
     setUserBetHistory((prevHistory) => [...prevHistory, newBet]);
+    // Invalidate cache since history has changed
+    setAnalysisCache({});
     if (selectedOddForStatistics) {
       // Re-run analysis if the new bet might be relevant
-      runAnalysis(selectedOddForStatistics);
+      runAnalysis(selectedOddForStatistics, true); // Force re-fetch
     }
   }
 
-  const runAnalysis = async (odd: Odd) => {
+  const runAnalysis = async (odd: Odd, forceRefetch = false) => {
+    if (!forceRefetch && analysisCache[odd.id]) {
+      setHistoricalAnalysis(analysisCache[odd.id]);
+      return;
+    }
+
     setIsAnalysisLoading(true);
     setHistoricalAnalysis(null);
     const analysisInput = {
@@ -72,6 +80,7 @@ export default function Home() {
       setHistoricalAnalysis(null);
     } else {
       setHistoricalAnalysis(result);
+      setAnalysisCache(prevCache => ({...prevCache, [odd.id]: result}));
     }
     setIsAnalysisLoading(false);
   }
