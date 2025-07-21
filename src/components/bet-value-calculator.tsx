@@ -25,8 +25,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { calculateBetValue } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, TrendingUp, Shield, Lightbulb } from "lucide-react";
+import { Loader2, TrendingUp, Shield, Lightbulb, AlertTriangle } from "lucide-react";
 import { availableSports, availableBetTypes } from "@/lib/mock-data";
+import type { Bet } from "@/lib/types";
+import { cn } from "@/lib/utils";
+
 
 const formSchema = z.object({
   sport: z.string().min(1, "Sport is required"),
@@ -46,9 +49,10 @@ type CalculationResult = {
 
 type BetValueCalculatorProps = {
     initialValues?: Partial<FormValues>;
+    betHistory: Bet[];
 }
 
-export function BetValueCalculator({ initialValues }: BetValueCalculatorProps) {
+export function BetValueCalculator({ initialValues, betHistory }: BetValueCalculatorProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [result, setResult] = React.useState<CalculationResult | null>(null);
   const { toast } = useToast();
@@ -70,7 +74,8 @@ export function BetValueCalculator({ initialValues }: BetValueCalculatorProps) {
     setResult(null);
     const response = await calculateBetValue({
         ...values,
-        userHistoryAnalysis: values.userHistoryAnalysis || "No historical data available."
+        userHistoryAnalysis: values.userHistoryAnalysis || "No historical data available.",
+        betHistory: betHistory
     });
 
     if ("error" in response) {
@@ -88,6 +93,8 @@ export function BetValueCalculator({ initialValues }: BetValueCalculatorProps) {
   React.useEffect(() => {
     // Hidden field, no need to show in UI
   }, [form.watch('userHistoryAnalysis')]);
+
+  const isWarning = result?.riskAssessment.toLowerCase().startsWith("warning:");
 
   return (
     <Card className="shadow-lg">
@@ -221,10 +228,10 @@ export function BetValueCalculator({ initialValues }: BetValueCalculatorProps) {
                         </div>
                     </div>
                     <div className="flex items-start gap-4">
-                         <Shield className="h-6 w-6 text-primary mt-1"/>
+                        {isWarning ? <AlertTriangle className="h-6 w-6 text-destructive mt-1"/> : <Shield className="h-6 w-6 text-primary mt-1"/> }
                         <div>
                             <p className="text-sm text-muted-foreground">Risk Assessment</p>
-                            <p>{result.riskAssessment}</p>
+                            <p className={cn(isWarning && "text-destructive font-semibold")}>{result.riskAssessment}</p>
                         </div>
                     </div>
                      <div className="flex items-start gap-4">

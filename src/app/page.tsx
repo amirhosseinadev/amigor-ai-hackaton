@@ -58,8 +58,9 @@ export default function Home() {
   }
 
   const runAnalysis = async (odd: Odd, forceRefetch = false) => {
-    if (!forceRefetch && analysisCache[odd.id]) {
-      setHistoricalAnalysis(analysisCache[odd.id]);
+    const cacheKey = odd.id;
+    if (!forceRefetch && analysisCache[cacheKey]) {
+      setHistoricalAnalysis(analysisCache[cacheKey]);
       return;
     }
 
@@ -80,7 +81,7 @@ export default function Home() {
       setHistoricalAnalysis(null);
     } else {
       setHistoricalAnalysis(result);
-      setAnalysisCache(prevCache => ({...prevCache, [odd.id]: result}));
+      setAnalysisCache(prevCache => ({...prevCache, [cacheKey]: result}));
     }
     setIsAnalysisLoading(false);
   }
@@ -154,6 +155,7 @@ export default function Home() {
                     odds: calculatorValues.odds,
                     userHistoryAnalysis: calculatorValues.userHistoryAnalysis
                 }}
+                betHistory={userBetHistory}
             />
           </aside>
         </div>
