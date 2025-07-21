@@ -62,7 +62,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeBetHistoryPrompt',
   input: { schema: AnalyzeBetHistoryInputSchema },
   output: { schema: AnalyzeBetHistoryOutputSchema },
-  prompt: `You are a data analyst specializing in sports betting. Analyze the provided user bet history to identify recurring patterns, calculate win/loss rates for specific conditions, and generate descriptive insights.
+  prompt: `You are a data analyst specializing in sports betting. Your task is to analyze a user's bet history and generate insights that are **strictly relevant** to the provided 'Current Bet Context'.
 
 Bet History:
 {{{json betHistory}}}
@@ -71,11 +71,15 @@ Current Bet Context:
 {{{json currentBetContext}}}
 
 Your task is to:
-1.  **Analyze the entire bet history** for patterns. Look for trends related to specific teams, sports, bet types, and market conditions (like 'Rainy', 'Key Injury', etc.).
-2.  **Calculate win rates** for the most significant patterns you find. For a condition to be significant, it should appear in at least 2 bets.
-3.  **Generate a concise, human-readable summary** for each significant pattern (e.g., "You tend to win when betting on Team A," "You often lose when betting on Over/Under in Basketball").
-4.  **Create an overall summary** of the user's historical performance that can be fed into another AI model. This summary should highlight the user's strongest and weakest areas relevant to the current bet context.
-5.  **Focus on insights that are relevant** to the 'Current Bet Context'. For example, if the user is looking at a soccer match, prioritize insights about soccer. If a team from their history is in the current match, provide insights on that team.
+1.  **Filter the Bet History**: Only consider bets that match the **sport** in the 'Current Bet Context'.
+2.  **Identify Relevant Patterns**: From the filtered history, find patterns related ONLY to the following criteria from the 'Current Bet Context':
+    *   Bets involving 'teamA' ({{currentBetContext.teamA}}).
+    *   Bets involving 'teamB' ({{currentBetContext.teamB}}).
+    *   Bets placed under similar 'marketInfluences' ({{currentBetContext.marketInfluences}}).
+    *   Bets of a specific 'betType' if it's a strong pattern for the involved teams or conditions.
+3.  **Generate Insights**: For each identified relevant pattern, if it is based on 2 or more bets, calculate the win rate and provide a summary.
+4.  **Overall Summary**: Create a concise overall summary of the user's performance specifically related to the context of this match.
+5.  **Be Strict**: If no relevant historical patterns are found (e.g., the user has never bet on these teams, this sport, or under these conditions), the 'insights' array should be empty. Do not provide generic or irrelevant insights.
 
 Provide the analysis in the specified output format.
 `,
