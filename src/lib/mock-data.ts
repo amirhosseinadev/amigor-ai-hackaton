@@ -127,10 +127,21 @@ export const userBetHistory: Bet[] = [
     { id: "hist2", sport: "Soccer", event: "La Liga", betType: "Moneyline", betOn: "Real Madrid", stake: 10, odds: 2.1, outcome: "win", date: "2023-10-02" },
     { id: "hist3", sport: "Basketball", event: "NBA", betType: "Over/Under", betOn: "Over 210.5", stake: 15, odds: 1.9, outcome: "loss", date: "2023-10-03" },
     { id: "hist4", sport: "Soccer", event: "Serie A", betType: "Draw", betOn: "Draw", stake: 5, odds: 3.5, outcome: "loss", date: "2023-10-04" },
-    { id: "hist5", sport: "Soccer", event: "Champions League", betType: "Moneyline", betOn: "Liverpool", stake: 25, odds: 2.8, outcome: "loss", date: "2023-10-05", marketCondition: "Rainy" },
+    { id: "hist5", sport: "Soccer", event: "Champions League", betType: "Moneyline", betOn: "Liverpool", stake: 25, odds: 2.8, outcome: "loss", date: "2023-10-05", marketCondition: "Injury" },
     { id: "hist6", sport: "Soccer", event: "FA Cup", betType: "Moneyline", betOn: "Man City", stake: 10, odds: 1.3, outcome: "win", date: "2023-11-01" },
     { id: "hist7", sport: "Tennis", event: "US Open", betType: "Moneyline", betOn: "N. Djokovic", stake: 50, odds: 1.2, outcome: "win", date: "2023-11-05" },
-    { id: "hist8", sport: "Soccer", event: "Friendly", betType: "Moneyline", betOn: "Liverpool", stake: 10, odds: 2.2, outcome: "win", date: "2023-11-10", marketCondition: "Rainy" },
+    { id: "hist8", sport: "Soccer", event: "Friendly", betType: "Moneyline", betOn: "Liverpool", stake: 10, odds: 2.2, outcome: "win", date: "2023-11-10", marketCondition: "Injury" },
+    { id: "hist9", sport: "Soccer", event: "Champions League", betType: "Moneyline", betOn: "Real Madrid", stake: 30, odds: 1.8, outcome: "win", date: "2023-09-15" },
+    { id: "hist10", sport: "Soccer", event: "Exhibition", betType: "Moneyline", betOn: "Real Madrid", stake: 15, odds: 1.5, outcome: "loss", date: "2023-09-01", marketCondition: "Market Trend" },
+    { id: "hist11", sport: "Soccer", event: "Premier League", betType: "Moneyline", betOn: "Liverpool", stake: 20, odds: 2.5, outcome: "loss", date: "2023-08-20", marketCondition: "Injury" },
+    { id: "hist12", sport: "Soccer", event: "La Liga", betType: "Moneyline", betOn: "Real Madrid", stake: 25, odds: 2.0, outcome: "win", date: "2023-08-10" },
+    { id: "hist13", sport: "Basketball", event: "Regular Season", betType: "Moneyline", betOn: "LA Lakers", stake: 40, odds: 1.7, outcome: "win", date: "2023-12-01" },
+    { id: "hist14", sport: "Basketball", event: "Regular Season", betType: "Moneyline", betOn: "Boston Celtics", stake: 20, odds: 2.2, outcome: "loss", date: "2023-12-05", marketCondition: "Team News" },
+    { id: "hist15", sport: "Basketball", event: "Regular Season", betType: "Moneyline", betOn: "LA Lakers", stake: 10, odds: 1.9, outcome: "win", date: "2023-11-20" },
+    { id: "hist16", sport: "Tennis", event: "Australian Open", betType: "Moneyline", betOn: "C. Alcaraz", stake: 30, odds: 2.3, outcome: "loss", date: "2024-01-20", marketCondition: "Weather" },
+    { id: "hist17", sport: "Soccer", event: "Premier League", betType: "Moneyline", betOn: "Man City", stake: 100, odds: 1.2, outcome: "win", date: "2024-02-10" },
+    { id: "hist18", sport: "Soccer", event: "FA Cup", betType: "Moneyline", betOn: "Arsenal", stake: 15, odds: 3.5, outcome: "loss", date: "2024-02-18" },
+    { id: "hist19", sport: "Soccer", event: "League Cup", betType: "Moneyline", betOn: "Arsenal", stake: 20, odds: 2.8, outcome: "win", date: "2024-01-15" }
 ]
 
 export const availableSports: readonly ["Soccer", "Basketball", "Tennis"] = ["Soccer", "Basketball", "Tennis"];
