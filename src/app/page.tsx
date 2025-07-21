@@ -39,6 +39,7 @@ export default function Home() {
       const firstOdd = odds[0];
       handleSelectOddForStatistics(firstOdd);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAddOdd = (newOdd: Odd) => {
@@ -62,7 +63,7 @@ export default function Home() {
         sport: odd.sport,
         teamA: odd.teamA,
         teamB: odd.teamB,
-        marketInfluences: odd.marketInfluences.map(mi => mi.name).join(', ')
+        marketInfluences: odd.marketInfluences.map(mi => mi.name).join(', ') || 'None'
       }
     };
     const result = await analyzeBetHistory(analysisInput);
