@@ -78,9 +78,13 @@ Your task is to:
     *   Bets placed under similar 'marketInfluences' ({{currentBetContext.marketInfluences}}).
     *   Bets of a specific 'betType' if it's a strong pattern for the involved teams or conditions.
 3.  **Generate Insights**: For each identified relevant pattern, if it is based on 2 or more bets, calculate the win rate and provide a summary.
-4.  **Win Rate Formatting**: When calculating the win rate, if the win rate is 0%, you MUST return it as "100% loss rate". For all other cases, return the win rate as a percentage (e.g., "75% win rate").
+4.  **Win Rate Formatting**: When calculating the win rate, if the win rate is 0%, you MUST return it as "100% loss rate". For all other cases, return the win rate as a percentage (e.g., "75%").
 5.  **Overall Summary**: Create a concise overall summary of the user's performance specifically related to the context of this match.
-6.  **Be Strict**: If no relevant historical patterns are found (e.g., the user has never bet on these teams, this sport, or under these conditions), the 'insights' array should be empty. Do not provide generic or irrelevant insights.
+6.  **Be Strict and Concise**:
+    *   If no relevant historical patterns are found (e.g., the user has never bet on these teams, this sport, or under these conditions), the 'insights' array should be empty.
+    *   The 'insights' array must contain a **maximum of 4** items.
+    *   Each insight must be unique and not repetitive. Ensure the insights are more than 30% different from each other.
+    *   Do not provide generic or irrelevant insights.
 
 Provide the analysis in the specified output format.
 `,

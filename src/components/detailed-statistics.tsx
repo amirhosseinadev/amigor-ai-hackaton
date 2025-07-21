@@ -74,6 +74,9 @@ const InsightSkeleton = () => (
 );
 
 const getTrendIcon = (winRate: string) => {
+    if (winRate.includes("loss")) {
+        return <TrendingDown className="h-5 w-5 text-red-500" />;
+    }
     const rate = parseInt(winRate, 10);
     if (rate >= 60) {
       return <TrendingUp className="h-5 w-5 text-green-500" />;
@@ -128,25 +131,30 @@ export function DetailedStatistics({ odd, historicalAnalysis, isAnalysisLoading 
             )}
             {!isAnalysisLoading && historicalAnalysis && historicalAnalysis.insights.length > 0 && (
             <div className="space-y-6">
-                {historicalAnalysis.insights.map((insight, index) => (
-                <div key={index} className="flex items-start gap-4">
-                    <div className="mt-1">{getTrendIcon(insight.winRate)}</div>
-                    <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                        <p className="font-semibold">{insight.condition}</p>
-                        <Badge variant={parseInt(insight.winRate, 10) >= 50 ? "default" : "destructive"}>
-                        {insight.winRate} Win Rate
-                        </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                        {insight.summary}
-                    </p>
-                    <p className="text-xs text-muted-foreground/70 mt-1">
-                        Based on {insight.betsAnalyzed} bet{insight.betsAnalyzed > 1 ? 's' : ''}.
-                    </p>
-                    </div>
-                </div>
-                ))}
+                {historicalAnalysis.insights.map((insight, index) => {
+                    const isLossRate = insight.winRate.includes("loss");
+                    const isWin = !isLossRate && parseInt(insight.winRate, 10) >= 50;
+
+                    return (
+                        <div key={index} className="flex items-start gap-4">
+                            <div className="mt-1">{getTrendIcon(insight.winRate)}</div>
+                            <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                                <p className="font-semibold">{insight.condition}</p>
+                                <Badge className="text-nowrap" variant={isLossRate ? "destructive" : "default"}>
+                                    {isLossRate ? insight.winRate : `${insight.winRate} Win Rate`}
+                                </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                {insight.summary}
+                            </p>
+                            <p className="text-xs text-muted-foreground/70 mt-1">
+                                Based on {insight.betsAnalyzed} bet{insight.betsAnalyzed > 1 ? 's' : ''}.
+                            </p>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
             )}
         </div>
