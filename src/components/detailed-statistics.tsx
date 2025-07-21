@@ -28,11 +28,16 @@ import {
 } from "@/components/ui/table";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
-import { Check, AlertTriangle, HelpCircle } from 'lucide-react';
+import { Check, AlertTriangle, HelpCircle, History, TrendingUp, TrendingDown, Info, Loader2 } from 'lucide-react';
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Odd, PlayerStatus, AvailabilityStatus } from "@/lib/types";
+import type { AnalyzeBetHistoryOutput } from "@/ai/flows/analyze-bet-history";
+import { Separator } from "./ui/separator";
 
 type DetailedStatisticsProps = {
   odd: Odd;
+  historicalAnalysis: AnalyzeBetHistoryOutput | null;
+  isAnalysisLoading: boolean;
 };
 
 const AvailabilityIcon = ({ status }: { status: AvailabilityStatus }) => {
@@ -49,7 +54,38 @@ const AvailabilityIcon = ({ status }: { status: AvailabilityStatus }) => {
     }
 }
 
-export function DetailedStatistics({ odd }: DetailedStatisticsProps) {
+const InsightSkeleton = () => (
+    <div className="space-y-4">
+        <div className="flex items-start gap-4">
+            <Skeleton className="h-6 w-6 rounded-full mt-1" />
+            <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+            </div>
+        </div>
+        <div className="flex items-start gap-4">
+            <Skeleton className="h-6 w-6 rounded-full mt-1" />
+            <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+            </div>
+        </div>
+    </div>
+);
+
+const getTrendIcon = (winRate: string) => {
+    const rate = parseInt(winRate, 10);
+    if (rate >= 60) {
+      return <TrendingUp className="h-5 w-5 text-green-500" />;
+    }
+    if (rate <= 40) {
+      return <TrendingDown className="h-5 w-5 text-red-500" />;
+    }
+    return <History className="h-5 w-5 text-yellow-500" />;
+  };
+
+
+export function DetailedStatistics({ odd, historicalAnalysis, isAnalysisLoading }: DetailedStatisticsProps) {
   const chartData = odd.historicalComparisonChartData || [];
   const chartConfig = {
     teamA: {
@@ -67,12 +103,57 @@ export function DetailedStatistics({ odd }: DetailedStatisticsProps) {
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle>AI Summary: {odd.event}</CardTitle>
+        <CardTitle>AI Summary & Insights: {odd.event}</CardTitle>
         <CardDescription>
-          An in-depth look at the factors influencing this matchup.
+          An in-depth look at the matchup and your historical performance.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">
+        
+        {/* Historical Insights Section */}
+        <div>
+            <h3 className="text-lg font-semibold mb-4">Your Historical Insights</h3>
+            {isAnalysisLoading && <InsightSkeleton />}
+            {!isAnalysisLoading && !historicalAnalysis && (
+                <div className="flex flex-col items-center justify-center gap-4 py-8 text-center text-sm text-muted-foreground">
+                    <Info className="h-8 w-8" />
+                    <p>Select an event to see personalized insights based on your betting history.</p>
+                </div>
+            )}
+            {!isAnalysisLoading && historicalAnalysis && historicalAnalysis.insights.length === 0 && (
+                <div className="flex flex-col items-center justify-center gap-4 py-8 text-center text-sm text-muted-foreground">
+                    <Info className="h-8 w-8" />
+                    <p>No specific insights found for this event based on your history. Add more bets to improve analysis.</p>
+                </div>
+            )}
+            {!isAnalysisLoading && historicalAnalysis && historicalAnalysis.insights.length > 0 && (
+            <div className="space-y-6">
+                {historicalAnalysis.insights.map((insight, index) => (
+                <div key={index} className="flex items-start gap-4">
+                    <div className="mt-1">{getTrendIcon(insight.winRate)}</div>
+                    <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                        <p className="font-semibold">{insight.condition}</p>
+                        <Badge variant={parseInt(insight.winRate, 10) >= 50 ? "default" : "destructive"}>
+                        {insight.winRate} Win Rate
+                        </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                        {insight.summary}
+                    </p>
+                    <p className="text-xs text-muted-foreground/70 mt-1">
+                        Based on {insight.betsAnalyzed} bet{insight.betsAnalyzed > 1 ? 's' : ''}.
+                    </p>
+                    </div>
+                </div>
+                ))}
+            </div>
+            )}
+        </div>
+        
+        <Separator />
+        
+        {/* Match-specific analysis */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             {chartData.length > 0 && (
                 <div className="flex flex-col">

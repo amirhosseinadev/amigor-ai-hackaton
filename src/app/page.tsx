@@ -9,7 +9,6 @@ import type { Odd, Bet } from "@/lib/types";
 import { initialOdds, userBetHistory as mockBetHistory } from "@/lib/mock-data";
 import { PredictionAlertModal } from "@/components/prediction-alert-modal";
 import { DetailedStatistics } from "@/components/detailed-statistics";
-import { HistoricalInsights } from "@/components/historical-insights";
 import type { AnalyzeBetHistoryOutput } from "@/ai/flows/analyze-bet-history";
 import { analyzeBetHistory } from "./actions";
 
@@ -56,6 +55,7 @@ export default function Home() {
 
   const runAnalysis = async (odd: Odd) => {
     setIsAnalysisLoading(true);
+    setHistoricalAnalysis(null);
     const analysisInput = {
       betHistory: userBetHistory,
       currentBetContext: {
@@ -126,8 +126,14 @@ export default function Home() {
               onOddSelect={handleOddSelectForCalculator}
               selectedOddId={selectedOddForStatistics?.id}
             />
-            {selectedOddForStatistics && <DetailedStatistics odd={selectedOddForStatistics} />}
-            <MockDataInterface onAddOdd={handleAddOdd} onAddBet={handleAddBet} />
+            {selectedOddForStatistics && (
+              <DetailedStatistics 
+                odd={selectedOddForStatistics} 
+                historicalAnalysis={historicalAnalysis}
+                isAnalysisLoading={isAnalysisLoading}
+              />
+            )}
+             <MockDataInterface onAddOdd={handleAddOdd} onAddBet={handleAddBet} />
           </div>
           <aside className="lg:col-span-1 lg:sticky top-8 flex flex-col gap-8">
             <BetValueCalculator
@@ -139,7 +145,6 @@ export default function Home() {
                     userHistoryAnalysis: calculatorValues.userHistoryAnalysis
                 }}
             />
-            <HistoricalInsights analysis={historicalAnalysis} isLoading={isAnalysisLoading} />
           </aside>
         </div>
       </main>
