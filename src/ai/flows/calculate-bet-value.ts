@@ -39,7 +39,8 @@ export type CalculateBetValueInput = z.infer<typeof CalculateBetValueInputSchema
 
 const CalculateBetValueOutputSchema = z.object({
   betValue: z.number().describe('The calculated value of the bet, considering odds and market influences.'),
-  riskAssessment: z.string().describe('An assessment of the risk associated with the bet. This should also include an analysis of the user\'s stake compared to their historical average, min, and max stakes.'),
+  riskAssessment: z.string().describe('An assessment of the risk associated with the bet, based on match and market factors.'),
+  stakeAnalysis: z.string().describe("An analysis of the user's current stake compared to their historical average, min, and max stakes. This message should start with 'Warning:' if the stake is higher than their historical maximum."),
   suggestedAction: z.string().describe('A suggested action based on the bet value and risk (e.g., place bet, wait for better odds).'),
 });
 export type CalculateBetValueOutput = z.infer<typeof CalculateBetValueOutputSchema>;
@@ -54,26 +55,19 @@ const prompt = ai.definePrompt({
   output: {schema: CalculateBetValueOutputSchema},
   prompt: `You are an AI assistant that calculates the potential value of sports bets and provides risk assessment.
 
-  1.  **Analyze the Bet**: Consider the following information to calculate the bet value, assess the primary risk, and suggest an action.
+  1.  **Analyze the Bet**: Consider the following information to calculate the bet value, assess the primary risk, and suggest an action. The risk assessment should focus only on match and market factors.
       *   Sport: {{{sport}}}
       *   Bet Type: {{{betType}}}
       *   Odds: {{{odds}}}
-      *   Stake: {{{stake}}}
       *   Market Influences: {{{marketInfluences}}}
       *   User's Historical Bet Analysis: {{{userHistoryAnalysis}}}
 
   2.  **Analyze the Stake**:
-      *   From the full bet history, calculate the user's minimum, maximum, and average stake.
+      *   From the full bet history provided, calculate the user's minimum, maximum, and average stake.
       *   Compare the current 'Stake' ({{{stake}}}) to these historical values.
-      *   If the current stake is higher than their historical maximum, prepend a "Warning:" to your risk assessment.
-      *   If the current stake is NOT higher than the maximum, provide a neutral, informative comparison.
+      *   Generate a concise 'stakeAnalysis' message. If the current stake is higher than their historical maximum, prepend "Warning:" to this message. Otherwise, provide a neutral, informative comparison. For example: "This stake of $50 is in line with your average of $45." or "Warning: This stake of $200 is significantly above your usual maximum of $100."
 
-  3.  **Combine and Finalize the Risk Assessment**:
-      *   Combine your primary risk assessment (from step 1) with your stake analysis (from step 2) into a single, coherent 'riskAssessment' string.
-      *   For example: "Medium risk. The team is in good form, but the key player's fitness is a concern. Your stake of $50 is higher than your historical average of $25."
-      *   Another example: "Warning: High risk. This stake of $200 is significantly above your usual maximum of $100. The market is also volatile for this match."
-
-  Return the calculated bet value, the final combined risk assessment, and the suggested action.
+  Return the calculated bet value, the market/match-based risk assessment, the separate stake analysis, and a suggested action.
 
   Full Bet History (for stake analysis):
   {{{json betHistory}}}

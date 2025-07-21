@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { calculateBetValue } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, TrendingUp, Shield, Lightbulb, AlertTriangle } from "lucide-react";
+import { Loader2, TrendingUp, Shield, Lightbulb, AlertTriangle, Coins } from "lucide-react";
 import { availableSports, availableBetTypes } from "@/lib/mock-data";
 import type { Bet } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -44,6 +44,7 @@ type FormValues = z.infer<typeof formSchema>;
 type CalculationResult = {
     betValue: number;
     riskAssessment: string;
+    stakeAnalysis: string;
     suggestedAction: string;
 };
 
@@ -94,7 +95,7 @@ export function BetValueCalculator({ initialValues, betHistory }: BetValueCalcul
     // Hidden field, no need to show in UI
   }, [form.watch('userHistoryAnalysis')]);
 
-  const isWarning = result?.riskAssessment.toLowerCase().startsWith("warning:");
+  const isStakeWarning = result?.stakeAnalysis.toLowerCase().startsWith("warning:");
 
   return (
     <Card className="shadow-lg">
@@ -228,10 +229,17 @@ export function BetValueCalculator({ initialValues, betHistory }: BetValueCalcul
                         </div>
                     </div>
                     <div className="flex items-start gap-4">
-                        {isWarning ? <AlertTriangle className="h-6 w-6 text-destructive mt-1"/> : <Shield className="h-6 w-6 text-primary mt-1"/> }
+                         <Shield className="h-6 w-6 text-primary mt-1"/>
                         <div>
                             <p className="text-sm text-muted-foreground">Risk Assessment</p>
-                            <p className={cn(isWarning && "text-destructive font-semibold")}>{result.riskAssessment}</p>
+                            <p>{result.riskAssessment}</p>
+                        </div>
+                    </div>
+                     <div className="flex items-start gap-4">
+                        {isStakeWarning ? <AlertTriangle className="h-6 w-6 text-destructive mt-1"/> : <Coins className="h-6 w-6 text-primary mt-1"/> }
+                        <div>
+                            <p className="text-sm text-muted-foreground">Stake Analysis</p>
+                            <p className={cn(isStakeWarning && "text-destructive font-semibold")}>{result.stakeAnalysis}</p>
                         </div>
                     </div>
                      <div className="flex items-start gap-4">
