@@ -8,7 +8,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Handshake className="h-8 w-8 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">
-            Amig<span className="text-primary">or</span>
+            Ami<span className="text-primary">Gor</span>
           </h1>
         </div>
         <div className="flex items-center gap-4">
