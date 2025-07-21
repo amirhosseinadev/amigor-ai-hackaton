@@ -14,6 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -28,12 +30,14 @@ import {
 } from "@/components/ui/collapsible";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ChevronsUpDown, PlusCircle } from "lucide-react";
-import type { Odd } from "@/lib/types";
-import { availableSports } from "@/lib/mock-data";
+import type { MarketInfluence, Odd } from "@/lib/types";
+import { allMarketInfluences, availableSports } from "@/lib/mock-data";
 
 type MockDataInterfaceProps = {
   onAddOdd: (newOdd: Odd) => void;
 };
+
+const marketInfluenceIds = Object.keys(allMarketInfluences) as [string, ...string[]];
 
 const formSchema = z.object({
   event: z.string().min(3, "Event name is too short"),
@@ -43,9 +47,14 @@ const formSchema = z.object({
   teamB: z.string().min(2, "Team name is too short"),
   teamBOdds: z.coerce.number().min(1),
   drawOdds: z.coerce.number().optional(),
+  marketInfluences: z.array(z.string()).optional(),
+  marketInfluenceDetails: z.string().optional(),
+  historicalComparisonChartData: z.string().optional(),
+  changesSinceLastMatch: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
+const influenceList = Object.values(allMarketInfluences);
 
 export function MockDataInterface({ onAddOdd }: MockDataInterfaceProps) {
   const form = useForm<FormValues>({
@@ -57,14 +66,41 @@ export function MockDataInterface({ onAddOdd }: MockDataInterfaceProps) {
       teamAOdds: 1.0,
       teamB: "",
       teamBOdds: 1.0,
+      marketInfluences: [],
+      marketInfluenceDetails: '{"injury": "Star player is out with a knee injury."}',
+      historicalComparisonChartData: '[{"match":"Last Season","teamA":2,"teamB":1,"similar":true},{"match":"Two Seasons Ago","teamA":2,"teamB":2,"similar":false}]',
+      changesSinceLastMatch: "Team A has a new coach and a stronger defense.",
     },
   });
 
   const onSubmit = (values: FormValues) => {
+    const selectedInfluences: MarketInfluence[] = (values.marketInfluences || [])
+        .map(id => allMarketInfluences[id])
+        .filter(Boolean);
+
+    let influenceDetails;
+    try {
+        influenceDetails = values.marketInfluenceDetails ? JSON.parse(values.marketInfluenceDetails) : {};
+    } catch (e) {
+        console.error("Invalid JSON for market influence details");
+        influenceDetails = {};
+    }
+
+    let chartData;
+    try {
+        chartData = values.historicalComparisonChartData ? JSON.parse(values.historicalComparisonChartData) : [];
+    } catch (e) {
+        console.error("Invalid JSON for chart data");
+        chartData = [];
+    }
+
     const newOdd: Odd = {
       ...values,
       id: new Date().toISOString(),
-      marketInfluences: [],
+      marketInfluences: selectedInfluences,
+      marketInfluenceDetails: influenceDetails,
+      historicalComparisonChartData: chartData,
+      changesSinceLastMatch: values.changesSinceLastMatch || "",
       historicalOdds: "No historical data available for mock events.",
     };
     onAddOdd(newOdd);
@@ -187,6 +223,85 @@ export function MockDataInterface({ onAddOdd }: MockDataInterfaceProps) {
                         <FormMessage />
                     </FormItem>
                     )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="marketInfluences"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Market Influences</FormLabel>
+                      <div className="grid grid-cols-2 gap-2">
+                        {influenceList.map((item) => (
+                          <FormField
+                            key={item.id}
+                            control={form.control}
+                            name="marketInfluences"
+                            render={({ field }) => {
+                              return (
+                                <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(item.id)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...(field.value || []), item.id])
+                                          : field.onChange(field.value?.filter((value) => value !== item.id));
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">{item.name}</FormLabel>
+                                </FormItem>
+                              );
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="marketInfluenceDetails"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Market Influence Details (JSON)</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder='e.g., {"injury": "Star player out for 2 weeks."}' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="historicalComparisonChartData"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Historical Chart Data (JSON)</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder='e.g., [{"match":"Last Season","teamA":2,"teamB":1,"similar":true}]' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="changesSinceLastMatch"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Changes Since Last Match</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="e.g., Team A has a new coach." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
 
                 <Button type="submit" className="w-full md:w-auto">

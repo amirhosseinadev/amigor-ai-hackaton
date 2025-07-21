@@ -11,6 +11,13 @@ export type MarketInfluence = {
 
 export type Sport = "Soccer" | "Basketball" | "Tennis";
 
+export type HistoricalComparisonDataPoint = {
+    match: string;
+    teamA: number;
+    teamB: number;
+    similar: boolean;
+}
+
 export type Odd = {
   id: string;
   event: string;
@@ -22,4 +29,7 @@ export type Odd = {
   sport: Sport;
   marketInfluences: MarketInfluence[];
   historicalOdds: string;
+  marketInfluenceDetails: Partial<Record<MarketInfluenceId, string>>;
+  historicalComparisonChartData: HistoricalComparisonDataPoint[];
+  changesSinceLastMatch: string;
 };

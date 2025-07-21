@@ -25,9 +25,11 @@ import type { Odd } from "@/lib/types";
 type OddsTableProps = {
   odds: Odd[];
   onPredictClick: (odd: Odd) => void;
+  onRowClick: (odd: Odd) => void;
+  selectedOddId?: string;
 };
 
-export function OddsTable({ odds, onPredictClick }: OddsTableProps) {
+export function OddsTable({ odds, onPredictClick, onRowClick, selectedOddId }: OddsTableProps) {
   const [highlightedCells, setHighlightedCells] = React.useState<Set<string>>(
     new Set()
   );
@@ -79,7 +81,14 @@ export function OddsTable({ odds, onPredictClick }: OddsTableProps) {
               </TableHeader>
               <TableBody>
                 {odds.map((odd) => (
-                  <TableRow key={odd.id}>
+                  <TableRow
+                    key={odd.id}
+                    onClick={() => onRowClick(odd)}
+                    className={cn(
+                        "cursor-pointer",
+                        odd.id === selectedOddId && "bg-muted/50"
+                    )}
+                  >
                     <TableCell>
                       <div className="font-medium">{odd.event}</div>
                       <div className="text-sm text-muted-foreground">
@@ -93,6 +102,7 @@ export function OddsTable({ odds, onPredictClick }: OddsTableProps) {
                         ),
                       })}
                     >
+                      <div className="text-xs text-muted-foreground">{odd.teamA}</div>
                       {odd.teamAOdds.toFixed(2)}
                     </TableCell>
                     <TableCell
@@ -102,6 +112,7 @@ export function OddsTable({ odds, onPredictClick }: OddsTableProps) {
                         ),
                       })}
                     >
+                      <div className="text-xs text-muted-foreground">{odd.teamB}</div>
                       {odd.teamBOdds.toFixed(2)}
                     </TableCell>
                     {odds.some((o) => o.drawOdds) && (
@@ -112,6 +123,7 @@ export function OddsTable({ odds, onPredictClick }: OddsTableProps) {
                           ),
                         })}
                       >
+                         <div className="text-xs text-muted-foreground">Draw</div>
                         {odd.drawOdds ? odd.drawOdds.toFixed(2) : "-"}
                       </TableCell>
                     )}
@@ -144,7 +156,10 @@ export function OddsTable({ odds, onPredictClick }: OddsTableProps) {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => onPredictClick(odd)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onPredictClick(odd);
+                            }}
                           >
                             <WandSparkles className="h-5 w-5" />
                           </Button>
