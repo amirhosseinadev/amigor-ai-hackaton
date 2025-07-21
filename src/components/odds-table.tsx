@@ -60,7 +60,6 @@ export function OddsTable({ odds, onPredictClick, onRowClick, onOddSelect, selec
   }, [odds]);
   
   const handleOddClick = (e: React.MouseEvent, oddValue: number) => {
-    e.stopPropagation();
     onOddSelect(oddValue);
   };
 
@@ -103,7 +102,7 @@ export function OddsTable({ odds, onPredictClick, onRowClick, onOddSelect, selec
                     </TableCell>
                     <TableCell
                       onClick={(e) => handleOddClick(e, odd.teamAOdds)}
-                      className={cn("text-center font-mono text-lg", {
+                      className={cn("text-center font-mono text-lg rounded-md hover:bg-accent/50", {
                         "animate-highlight": highlightedCells.has(
                           `${odd.id}-teamA`
                         ),
@@ -114,7 +113,7 @@ export function OddsTable({ odds, onPredictClick, onRowClick, onOddSelect, selec
                     </TableCell>
                     <TableCell
                       onClick={(e) => handleOddClick(e, odd.teamBOdds)}
-                      className={cn("text-center font-mono text-lg", {
+                      className={cn("text-center font-mono text-lg rounded-md hover:bg-accent/50", {
                         "animate-highlight": highlightedCells.has(
                           `${odd.id}-teamB`
                         ),
@@ -126,7 +125,7 @@ export function OddsTable({ odds, onPredictClick, onRowClick, onOddSelect, selec
                     {odds.some((o) => o.drawOdds) && (
                       <TableCell
                         onClick={(e) => odd.drawOdds && handleOddClick(e, odd.drawOdds)}
-                        className={cn("text-center font-mono text-lg", {
+                        className={cn("text-center font-mono text-lg rounded-md hover:bg-accent/50", {
                           "animate-highlight": highlightedCells.has(
                             `${odd.id}-draw`
                           ),

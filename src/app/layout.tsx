@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Odds Oracle',
-  description: 'AI-Powered Sports Betting Analysis',
+  title: 'Amigor',
+  description: 'Your friendly betting companion',
 };
 
 export default function RootLayout({
