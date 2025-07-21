@@ -141,7 +141,40 @@ export const userBetHistory: Bet[] = [
     { id: "hist16", sport: "Tennis", event: "Australian Open", betType: "Moneyline", betOn: "C. Alcaraz", stake: 30, odds: 2.3, outcome: "loss", date: "2024-01-20", marketCondition: "Weather" },
     { id: "hist17", sport: "Soccer", event: "Premier League", betType: "Moneyline", betOn: "Man City", stake: 100, odds: 1.2, outcome: "win", date: "2024-02-10" },
     { id: "hist18", sport: "Soccer", event: "FA Cup", betType: "Moneyline", betOn: "Arsenal", stake: 15, odds: 3.5, outcome: "loss", date: "2024-02-18" },
-    { id: "hist19", sport: "Soccer", event: "League Cup", betType: "Moneyline", betOn: "Arsenal", stake: 20, odds: 2.8, outcome: "win", date: "2024-01-15" }
+    { id: "hist19", sport: "Soccer", event: "League Cup", betType: "Moneyline", betOn: "Arsenal", stake: 20, odds: 2.8, outcome: "win", date: "2024-01-15" },
+    ...Array.from({ length: 90 }, (_, i) => {
+        const teams = ["Real Madrid", "Liverpool", "LA Lakers", "Boston Celtics", "Man City", "Arsenal"];
+        const sports: ("Soccer" | "Basketball")[] = ["Soccer", "Basketball"];
+        const outcomes: ("win" | "loss")[] = ["win", "loss"];
+        const betTypes: ("Moneyline" | "Draw")[] = ["Moneyline", "Draw"];
+        const marketConditions = ["Injury", "Market Trend", "Team News", ""];
+
+        const teamA = teams[Math.floor(Math.random() * teams.length)];
+        let teamB = teams[Math.floor(Math.random() * teams.length)];
+        while (teamA === teamB) {
+            teamB = teams[Math.floor(Math.random() * teams.length)];
+        }
+        
+        const sport = teamA.includes("Lakers") || teamA.includes("Celtics") ? "Basketball" : "Soccer";
+        const outcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+        const betOnTeam = Math.random() > 0.5 ? teamA : teamB;
+        const stake = Math.floor(Math.random() * 95) + 5;
+        const odds = parseFloat((Math.random() * 3 + 1.2).toFixed(2));
+        const date = new Date(new Date('2023-01-01').getTime() + Math.random() * (new Date().getTime() - new Date('2023-01-01').getTime())).toISOString().split('T')[0];
+
+        return {
+            id: `hist_extra_${i + 20}`,
+            sport: sport,
+            event: `${sport} Match`,
+            betType: betTypes[Math.floor(Math.random() * betTypes.length)],
+            betOn: betOnTeam,
+            stake: stake,
+            odds: odds,
+            outcome: outcome,
+            date: date,
+            marketCondition: marketConditions[Math.floor(Math.random() * marketConditions.length)],
+        };
+    })
 ]
 
 export const availableSports: readonly ["Soccer", "Basketball", "Tennis"] = ["Soccer", "Basketball", "Tennis"];

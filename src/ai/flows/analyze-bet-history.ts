@@ -40,7 +40,7 @@ export type AnalyzeBetHistoryInput = z.infer<typeof AnalyzeBetHistoryInputSchema
 
 const InsightSchema = z.object({
   condition: z.string().describe("The specific condition being analyzed (e.g., 'Bets on Real Madrid', 'Bets in Rainy Weather')."),
-  winRate: z.string().describe("The win rate for this condition, as a percentage (e.g., '75%')."),
+  winRate: z.string().describe("The win rate for this condition, as a percentage (e.g., '75%'). If the win rate is 0%, you must phrase it as '100% loss rate'."),
   summary: z.string().describe("A short, human-readable summary of the user's performance under this condition (e.g., 'You have a strong record when betting on this team.')."),
   betsAnalyzed: z.number().describe("The number of bets that match this condition.")
 });
@@ -78,8 +78,9 @@ Your task is to:
     *   Bets placed under similar 'marketInfluences' ({{currentBetContext.marketInfluences}}).
     *   Bets of a specific 'betType' if it's a strong pattern for the involved teams or conditions.
 3.  **Generate Insights**: For each identified relevant pattern, if it is based on 2 or more bets, calculate the win rate and provide a summary.
-4.  **Overall Summary**: Create a concise overall summary of the user's performance specifically related to the context of this match.
-5.  **Be Strict**: If no relevant historical patterns are found (e.g., the user has never bet on these teams, this sport, or under these conditions), the 'insights' array should be empty. Do not provide generic or irrelevant insights.
+4.  **Win Rate Formatting**: When calculating the win rate, if the win rate is 0%, you MUST return it as "100% loss rate". For all other cases, return the win rate as a percentage (e.g., "75% win rate").
+5.  **Overall Summary**: Create a concise overall summary of the user's performance specifically related to the context of this match.
+6.  **Be Strict**: If no relevant historical patterns are found (e.g., the user has never bet on these teams, this sport, or under these conditions), the 'insights' array should be empty. Do not provide generic or irrelevant insights.
 
 Provide the analysis in the specified output format.
 `,
